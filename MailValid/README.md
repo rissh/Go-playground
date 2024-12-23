@@ -70,33 +70,37 @@ nonexistentdomain.xyz
 
 ## Explanation of DNS Records Used
 ### 1. MX Records
-Purpose: MX records ensure that a domain can receive emails by specifying the mail servers responsible for handling emails.
 
-Example:
+**Purpose**: MX records ensure that a domain can receive emails by specifying the mail servers responsible for handling emails.
+
+**Example**:
 ```plaintext
 example.com mail exchanger = 10 mail.example.com.
 ```
 If no MX records are found, the domain cannot receive emails.
 
 ### 2. SPF Records
-Purpose: SPF prevents email spoofing by specifying the mail servers allowed to send emails on behalf of the domain.
 
-Example:
+**Purpose**: SPF prevents email spoofing by specifying the mail servers allowed to send emails on behalf of the domain.
+
+**Example**:
 ```plaintext
 v=spf1 include:_spf.example.com ~all
 ```
 If no SPF record is found, the domain lacks protection against email spoofing.
 
 ### 3. DMARC Records
-Purpose: DMARC enhances email authentication by providing domain owners with the ability to specify how emails failing SPF/DKIM checks should be handled.
-Example:
+**Purpose**: DMARC enhances email authentication by providing domain owners with the ability to specify how emails failing SPF/DKIM checks should be handled.
+
+**Example**:
 
 ```plaintext
 v=DMARC1; p=reject; rua=mailto:dmarc-reports@example.com
 ```
 
 If no DMARC record is found, the domain is not enforcing any email authentication policies.
-Example Usage
+
+## Example Usage
 
 **Input**
 ```plaintext
