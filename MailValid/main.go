@@ -10,16 +10,19 @@ import (
 )
 
 func main() {
+	// Print the CSV-style header
+	fmt.Println("domain, hasMX, hasSPF, spfRecord, hasDMARC, dmarcRecord")
 
+	// Read input from stdin line by line
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Printf("domain, hasMX, hasSPF, sprRecoed, hasDMARC, dmarcRecord\n")
-
 	for scanner.Scan() {
-		checkDomain(scanner.Text())
+		domain := scanner.Text()
+		checkDomain(domain)
 	}
 
+	// Check for any errors during input
 	if err := scanner.Err(); err != nil {
-		log.Fatal("Error: could not read from input: %v\n")
+		log.Fatalf("Error: could not read from input: %v\n", err)
 	}
 }
 
@@ -28,24 +31,20 @@ func checkDomain(domain string) {
 	var hasMX, hasSPF, hasDMARC bool
 	var spfRecord, dmarcRecord string
 
-	// mx record
+	// Check for MX records
 	mxRecords, err := net.LookupMX(domain)
-
 	if err != nil {
-		log.Printf("Error: %v\n", err)
+		log.Printf("Error looking up MX records for domain %s: %v\n", domain, err)
 	}
-
 	if len(mxRecords) > 0 {
 		hasMX = true
 	}
 
-	// txt record
+	// Check for TXT records
 	txtRecords, err := net.LookupTXT(domain)
-
 	if err != nil {
-		log.Printf("Error : %v\n")
+		log.Printf("Error looking up TXT records for domain %s: %v\n", domain, err)
 	}
-
 	for _, record := range txtRecords {
 		if strings.HasPrefix(record, "v=spf1") {
 			hasSPF = true
@@ -54,13 +53,11 @@ func checkDomain(domain string) {
 		}
 	}
 
-	// dmarc record
+	// Check for DMARC records
 	dmarcRecords, err := net.LookupTXT("_dmarc." + domain)
-
 	if err != nil {
-		log.Printf("Error: %v\n", err)
+		log.Printf("Error looking up DMARC records for domain %s: %v\n", domain, err)
 	}
-
 	for _, record := range dmarcRecords {
 		if strings.HasPrefix(record, "v=DMARC1") {
 			hasDMARC = true
@@ -69,6 +66,6 @@ func checkDomain(domain string) {
 		}
 	}
 
-	//
-	fmt.Print("%v, %v, %v, %v, %v, %v", domain, hasMX, hasSPF, spfRecord, hasDMARC, dmarcRecord)
+	// Print the results in CSV format
+	fmt.Printf("%s, %t, %t, %s, %t, %s\n", domain, hasMX, hasSPF, spfRecord, hasDMARC, dmarcRecord)
 }
